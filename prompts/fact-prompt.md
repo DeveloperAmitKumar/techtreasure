@@ -43,9 +43,15 @@ Write the content like an **experienced professional content writer**: simple, p
 
 ### Background Image Rules
 
-**Never use `"default"` for `bg_url`.**
+For every fact, first try to find a **real, relevant background image** related to the fact.
 
-For every fact, search the internet for a **real, relevant background image** related to the fact.
+The `bg_url` accepts, in order of preference:
+
+1. A **direct image URL** (rules below), or
+2. **Pexels search terms**: 2–4 lowercase words describing the ideal photo,
+   for example `"tech gadgets"` or `"boy standing mountain"`.
+   The app automatically fetches a matching photo from Pexels.
+3. `"default"` only when no meaningful search terms exist for the fact.
 
 The `bg_url` must:
 
@@ -59,7 +65,8 @@ The `bg_url` must:
 * Do not use Google/Bing image-search URLs.
 * Do not use article/page URLs as `bg_url`.
 * Do not use fake, guessed, placeholder, or fabricated image URLs.
-* **Never use `"default"` or an empty value.**
+* Use `"default"` only as a last resort when neither a direct URL nor
+  meaningful search terms are possible.
 * Prefer a different relevant image for each fact whenever possible.
 * If the fact is about a specific person, animal, company, place, object, or event, use an image that actually represents that subject whenever a legitimate direct image URL is available.
 * If a specific image cannot be found, use another legitimate direct image that accurately represents the fact rather than inventing a URL.
@@ -129,10 +136,10 @@ Before returning the output, check every item:
 2. The fact is relevant to `{TOPIC}`.
 3. The source supports the fact.
 4. The source URL is real and correctly wrapped.
-5. `bg_url` is a **real direct image URL**.
-6. The image is relevant to the specific fact.
-7. The image URL can be used directly inside an HTML `<img>` element.
-8. `bg_url` is never `"default"`.
+5. `bg_url` is a **real direct image URL, Pexels search terms, or `"default"`**.
+6. The image/query is relevant to the specific fact.
+7. A direct URL can be used directly inside an HTML `<img>` element.
+8. `bg_url` is never empty and never a fabricated URL.
 9. No URL is fabricated, guessed, or a search-results URL.
 10. All required keys are present.
 11. `tags` is an array.
@@ -166,9 +173,7 @@ The image URL must:
 
 ### Fallback Rule
 
-**If you cannot find and verify a suitable relevant direct `.jpg`, `.jpeg`, `.png`, or `.webp` image URL, add tags or serach terms like tech , car running etc or set the image field to exactly:**
-
-`"default"`
+**If you cannot find and verify a suitable relevant direct `.jpg`, `.jpeg`, `.png`, or `.webp` image URL, do NOT fabricate one.** Instead, write 2–4 lowercase search terms describing the ideal photo (for example `"tech gadgets"`, `"car running road"`). The app fetches a matching photo from Pexels automatically. Use `"default"` only when no meaningful search terms exist.
 
 Never fabricate an image URL just to fill the field.
 
@@ -176,8 +181,9 @@ Never fabricate an image URL just to fill the field.
 
 Before returning each item, verify:
 
-1. The image is relevant to the item.
-2. The URL points directly to an image.
-3. The image is a supported format such as `.jpg`, `.jpeg`, `.png`, or `.webp`.
-4. The image can reasonably be loaded by an HTML `<img>` element.
-5. If these conditions cannot be satisfied, use `"default"`.
+1. The image/query is relevant to the item.
+2. A direct URL points directly to an image.
+3. A direct URL is a supported format such as `.jpg`, `.jpeg`, `.png`, or `.webp`.
+4. A direct URL can reasonably be loaded by an HTML `<img>` element.
+5. Search terms are 2–4 plain lowercase words, not a URL and not a sentence.
+6. If none of these can be satisfied, use `"default"`.

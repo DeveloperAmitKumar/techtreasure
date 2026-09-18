@@ -22,9 +22,15 @@ Write the content like an **experienced professional news and Pinterest content 
 
 ### Important Image Rule
 
-**Never use `"default"` for `image_url`.**
+For every news item, first try to find a **real, relevant image URL specifically related to that news story**.
 
-For every news item, search the internet and find a **real, relevant image URL specifically related to that news story**.
+The `image_url` accepts, in order of preference:
+
+1. A **direct image URL** (rules below), or
+2. **Pexels search terms**: 2–4 lowercase words describing the ideal photo,
+   for example `"electric car factory"` or `"cricket stadium night"`.
+   The app automatically fetches a matching photo from Pexels.
+3. `"default"` only when no meaningful search terms exist for the story.
 
 The `image_url` must:
 
@@ -112,10 +118,10 @@ Before returning the result, check every item:
 
 1. The news story is real and relevant to `{TOPIC}`.
 2. The article URL matches the story.
-3. `image_url` is a **real direct image URL**, not a webpage URL.
-4. The image is relevant to that specific story.
-5. The image URL can be used directly inside an HTML `<img>` element.
-6. No `image_url` contains `"default"`.
+3. `image_url` is a **real direct image URL, Pexels search terms, or `"default"`**, not a webpage URL.
+4. The image/query is relevant to that specific story.
+5. A direct URL can be used directly inside an HTML `<img>` element.
+6. No `image_url` is empty or fabricated.
 7. No URLs are fabricated or placeholders.
 8. There are exactly `{N}` items.
 9. All required keys are present.
@@ -141,9 +147,7 @@ The image URL must:
 
 ### Fallback Rule
 
-**If you cannot find and verify a suitable relevant direct `.jpg`, `.jpeg`, `.png`, or `.webp` image URL, add tags or serach terms like tech , car running etc or set the image field to exactly:**
-
-`"default"`
+**If you cannot find and verify a suitable relevant direct `.jpg`, `.jpeg`, `.png`, or `.webp` image URL, do NOT fabricate one.** Instead, write 2–4 lowercase search terms describing the ideal photo (for example `"tech gadgets"`, `"car running road"`). The app fetches a matching photo from Pexels automatically. Use `"default"` only when no meaningful search terms exist.
 
 Never fabricate an image URL just to fill the field.
 
@@ -151,8 +155,9 @@ Never fabricate an image URL just to fill the field.
 
 Before returning each item, verify:
 
-1. The image is relevant to the item.
-2. The URL points directly to an image.
-3. The image is a supported format such as `.jpg`, `.jpeg`, `.png`, or `.webp`.
-4. The image can reasonably be loaded by an HTML `<img>` element.
-5. If these conditions cannot be satisfied, use `"default"`.
+1. The image/query is relevant to the item.
+2. A direct URL points directly to an image.
+3. A direct URL is a supported format such as `.jpg`, `.jpeg`, `.png`, or `.webp`.
+4. A direct URL can reasonably be loaded by an HTML `<img>` element.
+5. Search terms are 2–4 plain lowercase words, not a URL and not a sentence.
+6. If none of these can be satisfied, use `"default"`.
