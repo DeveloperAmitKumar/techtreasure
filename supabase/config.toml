@@ -1,0 +1,14 @@
+project_id = "qgrmwyktmthfasjmegdp"
+
+[auth]
+[auth.email]
+enable_signup = true
+# Users can log in immediately after signup — no email confirmation required.
+# Hosted project equivalent: mailer_autoconfirm = true (Dashboard → Auth → Sign In → Email → "Confirm email" OFF).
+enable_confirmations = false
+
+[functions.generate-meta]
+verify_jwt = true
+
+[functions.track-click]
+verify_jwt = false

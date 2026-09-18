@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Continue — TechTreasure</title>
+
+    <!-- Edit only these booleans to control each ad independently. -->
+    <script>
+      var ad1_inPagePush = false;
+      var ad2_pushNotifications = false;
+      var ad3_vignetteBanner = true;
+      var ad4_socialBanner = true;
+      var ad5_sideBanner = true;
+      var ad6_topBanner = true;
+      var ad7_nativeBanner = true;
+
+      function loadAdScript(src, attributes) {
+        var script = document.createElement("script");
+        script.src = src;
+        Object.keys(attributes || {}).forEach(function (key) {
+          script.setAttribute(key, attributes[key]);
+        });
+        document.head.appendChild(script);
+      }
+
+      function loadConfiguredAds() {
+        if (!ad5_sideBanner) document.querySelector(".side-col").style.display = "none";
+        if (!ad6_topBanner) document.getElementById("top-ad").parentElement.style.display = "none";
+        if (!ad7_nativeBanner) document.getElementById("container-7c7a10ba1bc973d43d487edb56cfc540").parentElement.style.display = "none";
+        if (ad1_inPagePush) {
+          loadAdScript("https://nap5k.com/tag.min.js", { "data-zone": "11102727" });
+        }
+        if (ad2_pushNotifications) {
+          loadAdScript("https://5gvci.com/act/files/tag.min.js?z=11102725", {
+            "data-cfasync": "false",
+            async: "async"
+          });
+        }
+        if (ad3_vignetteBanner) {
+          loadAdScript("https://n6wxm.com/vignette.min.js", { "data-zone": "11093287" });
+        }
+        if (ad4_socialBanner) {
+          loadAdScript("https://pl29613864.profitableratecpmnetwork.com/57/32/3d/57323d562033184a4f09a3db9cbf1b96.js", {});
+        }
+        function loadNativeBanner() {
+          if (ad7_nativeBanner) {
+            loadAdScript("https://pl29613831.profitableratecpmnetwork.com/7c7a10ba1bc973d43d487edb56cfc540/invoke.js", {
+              async: "async",
+              "data-cfasync": "false"
+            });
+          }
+        }
+        function loadTopBanner() {
+          if (ad6_topBanner) {
+            loadIframeAd("1968f0077a296f2b0346ba8b087f03d4", 300, 250, "top-ad", loadNativeBanner);
+          } else {
+            loadNativeBanner();
+          }
+        }
+        if (ad5_sideBanner) {
+          loadIframeAd("d13fb8f21112eb9080f10bd0c46e1e39", 160, 600, "side-ad", loadTopBanner);
+        } else {
+          loadTopBanner();
+        }
+      }
+
+      function loadIframeAd(key, height, width, containerId, onload) {
+        window.atOptions = {
+          key: key,
+          format: "iframe",
+          height: height,
+          width: width,
+          params: {}
+        };
+        var script = document.createElement("script");
+        script.src = "https://www.highrevenueformat.com/" + key + "/invoke.js";
+        script.onload = onload || null;
+        script.setAttribute("data-ad-container", containerId);
+        document.head.appendChild(script);
+      }
+    </script>
+
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #f5f5f5;
+        color: #1a1a1a;
+      }
+      .layout {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 24px 12px;
+      }
+      .side-col {
+        width: 160px;
+        flex: 0 0 160px;
+        display: none;
+      }
+      .main-col {
+        flex: 1 1 auto;
+        max-width: 520px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+      @media (min-width: 900px) {
+        .side-col { display: block; }
+      }
+      .card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        padding: 32px 28px;
+        text-align: center;
+      }
+      .brand { font-weight: 800; color: #e60023; font-size: 20px; }
+      h1 { font-size: 20px; margin: 18px 0 8px; }
+      .dest {
+        word-break: break-all;
+        font-size: 13px;
+        color: #666;
+        background: #f7f7f7;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin: 16px 0 24px;
+      }
+      .url-form {
+        display: flex;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .url-input {
+        min-width: 0;
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 14px;
+      }
+      .url-input:focus {
+        outline: 2px solid rgba(230, 0, 35, 0.2);
+        border-color: #e60023;
+      }
+      .generated {
+        display: none;
+        margin: 16px 0;
+        text-align: left;
+      }
+      .generated label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #666;
+      }
+      .generated-row {
+        display: flex;
+        gap: 8px;
+      }
+      .generated-row .url-input { width: 100%; }
+      .copy-btn {
+        flex: 0 0 auto;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+        padding: 0 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .cta {
+        display: inline-block;
+        width: 100%;
+        background: #e60023;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .cta:hover { background: #ad081b; }
+      .cta:disabled { opacity: 0.5; cursor: not-allowed; }
+      .note { font-size: 12px; color: #999; margin-top: 14px; }
+      .error { color: #b00020; }
+      .banner { width: 100%; display: flex; justify-content: center; }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <!-- ===== SIDE COLUMN: ad_id 5 — Banner 160x600 ===== -->
+      <div class="side-col">
+        <div class="banner">
+          <div id="side-ad"></div>
+        </div>
+      </div>
+
+      <!-- ===== MAIN COLUMN ===== -->
+      <div class="main-col">
+        <!-- ad_id 6: Banner 300x250 -->
+        <div class="banner">
+          <div id="top-ad"></div>
+        </div>
+
+        <div class="card">
+          <div class="brand">TechTreasure</div>
+          <h1 id="message">Create a redirect link</h1>
+          <form class="url-form" id="urlForm">
+            <input
+              class="url-input"
+              id="urlInput"
+              type="text"
+              placeholder="example.com or https://example.com"
+              autocomplete="url"
+              required
+            />
+            <button class="cta" id="goBtn" type="submit" style="width:auto; white-space:nowrap">
+              Go
+            </button>
+          </form>
+          <div class="generated" id="generated">
+            <label for="generatedUrl">Your redirector URL</label>
+            <div class="generated-row">
+              <input class="url-input" id="generatedUrl" type="text" readonly />
+              <button class="copy-btn" id="copyBtn" type="button">Copy</button>
+            </div>
+          </div>
+          <div class="dest" id="dest">—</div>
+          <button class="cta" id="continueBtn" disabled style="display:none">Continue</button>
+          <p class="note">
+            We may earn a commission from links on this page, at no extra cost to
+            you.
+          </p>
+        </div>
+
+        <!-- ad_id 7: Native Banner -->
+        <div class="banner">
+          <div id="container-7c7a10ba1bc973d43d487edb56cfc540"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // track-click edge function (deployed with --no-verify-jwt).
+      var TRACK_CLICK_URL =
+        "https://qgrmwyktmthfasjmegdp.supabase.co/functions/v1/track-click";
+
+      loadConfiguredAds();
+
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var raw = params.get("url");
+        var destEl = document.getElementById("dest");
+        var msgEl = document.getElementById("message");
+        var btn = document.getElementById("continueBtn");
+        var form = document.getElementById("urlForm");
+        var input = document.getElementById("urlInput");
+        var generated = document.getElementById("generated");
+        var generatedUrl = document.getElementById("generatedUrl");
+        var copyBtn = document.getElementById("copyBtn");
+        var hasQueryTarget = Boolean(raw);
+
+        var target = null;
+        function parseTarget(value) {
+          try {
+            var normalized = value.trim();
+            if (!/^https?:\/\//i.test(normalized)) {
+              normalized = "https://" + normalized;
+            }
+            var parsed = new URL(normalized);
+            // Only allow http/https destinations (block javascript:, data:, etc.)
+            return parsed.protocol === "http:" || parsed.protocol === "https:"
+              ? parsed.href
+              : null;
+          } catch (e) {
+            return null;
+          }
+        }
+
+        function setTarget(value) {
+          target = parseTarget(value);
+          if (!target) {
+            msgEl.textContent = "Enter a valid http(s) URL.";
+            msgEl.className = "error";
+            destEl.textContent = "—";
+            btn.disabled = true;
+            return false;
+          }
+          msgEl.textContent = "You're almost there…";
+          msgEl.className = "";
+          destEl.textContent = target;
+          btn.disabled = !hasQueryTarget;
+          if (!hasQueryTarget) {
+            generatedUrl.value = window.location.origin + window.location.pathname + "?url=" + encodeURIComponent(target);
+            generated.style.display = "block";
+            msgEl.textContent = "Your redirector link is ready";
+          }
+          return true;
+        }
+
+        if (raw) {
+          input.value = raw;
+          setTarget(raw);
+          form.style.display = "none";
+          generated.style.display = "none";
+          btn.style.display = "block";
+        }
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          setTarget(input.value);
+        });
+
+        copyBtn.addEventListener("click", function () {
+          generatedUrl.select();
+          navigator.clipboard.writeText(generatedUrl.value).then(function () {
+            copyBtn.textContent = "Copied";
+            setTimeout(function () { copyBtn.textContent = "Copy"; }, 1600);
+          });
+        });
+
+        btn.addEventListener("click", function () {
+          if (TRACK_CLICK_URL) {
+            try {
+              fetch(TRACK_CLICK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ source_link: target }),
+                keepalive: true,
+              });
+            } catch (e) {}
+          }
+          window.location.href = target;
+        });
+      })();
+    </script>
+  </body>
+</html>
