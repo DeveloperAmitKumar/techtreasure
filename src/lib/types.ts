@@ -87,7 +87,10 @@ export interface GeneratedMeta {
 }
 
 // A single resolved input row for a batch. `text` is the quote/fact/headline.
-// author/link/bgUrl are optional per-item overrides. title/description/tags/
+// author/link/bgUrl are optional per-item overrides. `bgQuery` holds free
+// text from the image/bg column (e.g. "tech", "a boy standing") that is
+// resolved to a real image via the Pexels API at generation time.
+// title/description/tags/
 // cta/mainLine are optional per-item details: any field left empty falls back
 // to the AI-generated default for that pin. (Quotes always render `text` as
 // the pin's main line, so `mainLine` is ignored for quotes.)
@@ -96,6 +99,8 @@ export interface PinItem {
   author?: string;
   link?: string;
   bgUrl?: string;
+  /** Free-text image search query for Pexels (when bg column is not a URL). */
+  bgQuery?: string;
   title?: string;
   description?: string;
   tags?: string[];

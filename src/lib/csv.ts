@@ -58,8 +58,9 @@ function publishDateSafe(iso: string | null | undefined): string {
   return publishDate(iso);
 }
 
-export function buildCsvRows(pins: Pin[], boardName: string, sourceLink: string): CsvRow[] {
+export function buildCsvRows(pins: Pin[], boardName: string, sourceLink: string, opts?: { postImmediately?: boolean }): CsvRow[] {
   const safeBoard = typeof boardName === "string" && boardName.trim().length > 0 ? boardName.trim() : "TechTreasure Pins";
+  const postImmediately = opts?.postImmediately === true;
   return pins.map((p) => {
     const mediaUrl = isValidHttpUrl(p.image_url) ? p.image_url : "";
     const pinSourceLink = p.source_link || sourceLink;
@@ -71,7 +72,8 @@ export function buildCsvRows(pins: Pin[], boardName: string, sourceLink: string)
       Thumbnail: "",
       Description: (p.description || "").slice(0, 500),
       Link: link,
-      "Publish date": publishDateSafe(p.scheduled_at),
+      // Pinterest: blank Publish date = post immediately.
+      "Publish date": postImmediately ? "" : publishDateSafe(p.scheduled_at),
       Keywords: sanitizeKeywords(p.tags),
     };
   });

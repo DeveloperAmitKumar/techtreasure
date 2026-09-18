@@ -15,6 +15,7 @@ import {
   type SkippedRow,
 } from "@/lib/csvImport";
 import { parseImportJson, buildSampleJson } from "@/lib/jsonImport";
+import { resolvePexelsImage } from "@/lib/pexels";
 import {
   type Brand,
   type SavedBoard,
@@ -164,6 +165,8 @@ export default function BatchForm({
   const [start, setStart] = useState(defaultStart());
   const [intervalMin, setIntervalMin] = useState(60);
   const [concurrency, setConcurrency] = useState(4);
+  // Pinterest: blank Publish date = post all immediately.
+  const [postImmediately, setPostImmediately] = useState(false);
 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [generating, setGenerating] = useState(false);
@@ -412,6 +415,29 @@ export default function BatchForm({
 
   function effectiveBg(index: number, item: PinItem): string | null {
     if (item.bgUrl) return item.bgUrl;
+    if (bgPool.length === 0) return null;
+    return bgPool[index % bgPool.length];
+  }
+
+  // Per-run Pexels occurrence counters so repeated queries ("tech" × 20)
+  // pick different photos instead of the same one.
+  const pexelsCountRef = useRef<Map<string, number>>(new Map());
+
+  async function resolveBg(index: number, item: PinItem, pinLabel: string): Promise<string | null> {
+    if (item.bgUrl) return item.bgUrl;
+    const q = (item.bgQuery ?? "").trim();
+    if (q) {
+      const key = q.toLowerCase();
+      const occurrence = pexelsCountRef.current.get(key) ?? 0;
+      pexelsCountRef.current.set(key, occurrence + 1);
+      try {
+        setGenerationStage(`Finding background photo for pin ${pinLabel} (“${q}”)…`);
+        const url = await resolvePexelsImage(q, occurrence);
+        if (url) return url;
+      } catch {
+        // fall through to batch pool / brand color
+      }
+    }
     if (bgPool.length === 0) return null;
     return bgPool[index % bgPool.length];
   }
@@ -747,12 +773,17 @@ export default function BatchForm({
         if (run.contentType === "news") meta.cta = "";
 
         setGenerationStage(`Rendering pin ${i + 1} of ${progressTotal}…`);
+        const bgImageUrl = await resolveBg(i, item, `${i + 1} of ${progressTotal}`);
+        if (cancelRef.current) {
+          markDone();
+          return;
+        }
         const blob = await renderPin({
           brand: effectiveBrand,
           meta,
           contentType: run.contentType,
           newsTemplate: run.contentType === "news" ? run.newsTemplate : undefined,
-          backgroundImageUrl: effectiveBg(i, item),
+          backgroundImageUrl: bgImageUrl,
           backgroundBlur: effectiveBlur,
           textStyle,
           author: contentType === "quote" ? item.author ?? null : null,
@@ -770,9 +801,11 @@ export default function BatchForm({
           .getPublicUrl(path);
 
         // Deterministic schedule spacing from the item index (not pool order).
-        const scheduledAt = new Date(
-          startMs + i * intervalMin * 60_000
-        ).toISOString();
+        // Post-immediately: DB still needs a timestamp — store now; CSV export
+        // leaves Publish date blank so Pinterest posts at once.
+        const scheduledAt = postImmediately
+          ? new Date().toISOString()
+          : new Date(startMs + i * intervalMin * 60_000).toISOString();
 
         const safeTags = Array.isArray(meta.tags)
           ? meta.tags
@@ -856,6 +889,7 @@ export default function BatchForm({
     setQuotaModal(null);
     cancelRef.current = false;
     quotaHitRef.current = false;
+    pexelsCountRef.current = new Map();
     setGenerating(true);
     setGenerationStage("Preparing your batch…");
     console.time("batch");
@@ -955,6 +989,7 @@ export default function BatchForm({
     setQuotaModal(null);
     cancelRef.current = false;
     quotaHitRef.current = false;
+    // Keep existing counters so retries pick fresh photos, not repeats.
     setGenerating(true);
     setGenerationStage("Retrying failed pins…");
     console.time("batch-retry");
@@ -1564,8 +1599,9 @@ export default function BatchForm({
             </p>
             <p className="mt-1 text-xs text-neutral-500">
               Note: <code>bg</code> accepts a full URL, <code>default</code>{" "}
-              (batch backgrounds), or a Library name like{" "}
-              <code>Sunset</code> or <code>Stock 5</code>.
+              (batch backgrounds), a Library name like{" "}
+              <code>Sunset</code> or <code>Stock 5</code>, or free text like{" "}
+              <code>a boy standing</code> (auto-fetched from Pexels).
             </p>
           </div>
         )}
@@ -1657,8 +1693,9 @@ export default function BatchForm({
             </p>
             <p className="text-xs text-neutral-500">
               Note: the background column accepts a full URL,{" "}
-              <code>default</code> (batch backgrounds), or a Library name like{" "}
-              <code>Sunset</code> or <code>Stock 5</code>.
+              <code>default</code> (batch backgrounds), a Library name like{" "}
+              <code>Sunset</code> or <code>Stock 5</code>, or free text like{" "}
+              <code>a boy standing</code> (auto-fetched from Pexels).
             </p>
             {csvName && (
               <div className="rounded-md bg-neutral-50 px-3 py-2 text-sm">
@@ -1766,9 +1803,10 @@ export default function BatchForm({
               )}
               ) — incomplete rows are skipped above, and only pin credits are
               spent. The background field accepts a full URL,{" "}
-              <code>default</code> (batch backgrounds), or a Library name like{" "}
+              <code>default</code> (batch backgrounds), a Library name like{" "}
               <code>Sunset</code> or <code>Stock 5</code> (hover a Library
-              photo to see its name).
+              photo to see its name), or free text like{" "}
+              <code>a boy standing</code> (auto-fetched from Pexels).
             </p>
             <details className="rounded-md border border-neutral-200 bg-neutral-50">
               <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-neutral-600">
@@ -1782,22 +1820,24 @@ export default function BatchForm({
         )}
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <div>
+          <div className={postImmediately ? "opacity-50" : ""}>
             <label className="label">Start datetime (local)</label>
             <input
               type="datetime-local"
               className="input"
               value={start}
+              disabled={postImmediately}
               onChange={(e) => setStart(e.target.value)}
             />
           </div>
-          <div>
+          <div className={postImmediately ? "opacity-50" : ""}>
             <label className="label">Interval (minutes)</label>
             <input
               type="number"
               min={1}
               className="input"
               value={intervalMin}
+              disabled={postImmediately}
               onChange={(e) => setIntervalMin(Math.max(1, Number(e.target.value)))}
             />
           </div>
@@ -1817,6 +1857,20 @@ export default function BatchForm({
             </select>
           </div>
         </div>
+        <label className="flex cursor-pointer items-start gap-2 rounded-md bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
+          <input
+            type="checkbox"
+            className="mt-0.5 h-4 w-4 shrink-0 accent-neutral-900"
+            checked={postImmediately}
+            onChange={(e) => setPostImmediately(e.target.checked)}
+          />
+          <span>
+            <span className="font-semibold">Post immediately</span>
+            <span className="block text-xs text-neutral-500">
+              Pinterest posts all pins at once when Publish date is blank — Start datetime and Interval are ignored, and the exported CSV leaves Publish date empty.
+            </span>
+          </span>
+        </label>
       </div>
 
       <div className="card space-y-4">

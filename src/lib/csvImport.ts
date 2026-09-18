@@ -131,21 +131,20 @@ export function parseImportCsv(
       skipped.push({ row: rowNum, reason: `invalid "${linkCol}" URL` });
       return;
     }
-    // Background cell: URL, "default", or a Library name ("Sunset"/"Stock 5").
-    const bgResolved = resolveBgInput(row[bgCol] ?? "");
-    if (!bgResolved.ok) {
-      skipped.push({
-        row: rowNum,
-        reason: `invalid "${bgCol}" (use a URL, "default", or a Library name)`,
-      });
-      return;
-    }
+    // Background cell: URL, "default", a Library name ("Sunset"/"Stock 5"),
+    // or free text ("tech", "a boy standing") → Pexels search at generation.
+    const bgRaw = (row[bgCol] ?? "").trim();
+    const bgResolved = resolveBgInput(bgRaw);
+    // Free text that is not a URL/default/Library name becomes a Pexels query
+    // instead of skipping the row. Empty = batch default.
+    const bgQuery = !bgResolved.ok && bgRaw.length > 0 ? bgRaw.slice(0, 100) : undefined;
 
     const item: PinItem = {
       text,
       author: row["author"] || undefined,
       link: link || undefined,
-      bgUrl: bgResolved.url,
+      bgUrl: bgResolved.ok ? bgResolved.url : undefined,
+      bgQuery,
       title: nonEmpty(row["title"]),
       description: nonEmpty(row["description"]),
       tags: parseTagsInput(row["tags"]),
@@ -217,6 +216,8 @@ export function parsePastedList(text: string, contentType: ContentType): PinItem
       const linkRaw = contentType === "quote" ? get(1) : get(0);
       const bgRaw = contentType === "quote" ? get(2) : get(1);
       const bgResolved = resolveBgInput(bgRaw ?? "");
+      const bgText = (bgRaw ?? "").trim();
+      const bgQuery = !bgResolved.ok && bgText.length > 0 ? bgText.slice(0, 100) : undefined;
       const detail = (n: number): string | undefined => {
         const v = get(n);
         return v && v.length > 0 ? v : undefined;
@@ -225,6 +226,7 @@ export function parsePastedList(text: string, contentType: ContentType): PinItem
         text: parts[0],
         link: linkRaw && isUrl(linkRaw) ? linkRaw : undefined,
         bgUrl: bgResolved.ok ? bgResolved.url : undefined,
+        bgQuery,
       };
       if (contentType === "quote") {
         return {

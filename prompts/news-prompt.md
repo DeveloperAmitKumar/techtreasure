@@ -141,7 +141,7 @@ The image URL must:
 
 ### Fallback Rule
 
-**If you cannot find and verify a suitable relevant direct `.jpg`, `.jpeg`, `.png`, or `.webp` image URL, set the image field to exactly:**
+**If you cannot find and verify a suitable relevant direct `.jpg`, `.jpeg`, `.png`, or `.webp` image URL, add tags or serach terms like tech , car running etc or set the image field to exactly:**
 
 `"default"`
 
