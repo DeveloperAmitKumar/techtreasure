@@ -60,13 +60,7 @@ export default async function SettingsPage() {
           </div>
           <div>
             <dt className="text-neutral-500">AI credits</dt>
-            <dd className="font-semibold">
-              {usingCustomKey ? (
-                <span className="text-green-700">API key Being used</span>
-              ) : (
-                profile?.ai_credits ?? 0
-              )}
-            </dd>
+            <dd className="font-semibold text-amber-700">Coming soon</dd>
           </div>
           <div>
             <dt className="text-neutral-500">Pin credits</dt>

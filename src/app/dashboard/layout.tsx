@@ -67,12 +67,15 @@ export default async function DashboardLayout({
               <p className="mt-2 text-xs uppercase tracking-wide text-neutral-500">
                 AI credits
               </p>
-              <p className="text-lg font-bold">{profile?.ai_credits ?? 0}</p>
+              <p className="text-sm font-bold text-amber-700">Coming soon</p>
               <p className="mt-2 text-xs uppercase tracking-wide text-neutral-500">
                 Pin credits
               </p>
               <p className="text-lg font-bold">{profile?.credits ?? 0}</p>
             </div>
+            <Link href="/pricing" className="btn-primary w-full text-center">
+              Upgrade plan
+            </Link>
             <LogoutButton />
           </div>
         </div>
