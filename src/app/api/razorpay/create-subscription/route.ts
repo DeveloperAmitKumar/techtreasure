@@ -17,6 +17,9 @@ export async function POST(request: Request) {
   if (!plan || plan.id === "free" || !plan.razorpayPlanEnv) {
     return NextResponse.json({ error: "Invalid paid plan." }, { status: 400 });
   }
+  if (plan.available === false) {
+    return NextResponse.json({ error: `${plan.name} is temporarily unavailable. Please get the ₹9 Lifetime Trial instead.` }, { status: 403 });
+  }
   const planId = process.env[plan.razorpayPlanEnv];
   if (!planId || !process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
     return NextResponse.json({ error: "Razorpay is not configured yet." }, { status: 503 });

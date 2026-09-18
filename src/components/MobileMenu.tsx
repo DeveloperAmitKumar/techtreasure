@@ -16,40 +16,67 @@ const links = [
   ["/dashboard/report", "fluent-emoji-flat:speech-balloon", "Report & Support"],
 ] as const;
 
-export default function MobileMenu() {
+export default function MobileMenu({
+  plan = "free",
+  credits = 0,
+}: {
+  plan?: string;
+  credits?: number;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-neutral-200 bg-white p-4 lg:hidden">
-      <div className="flex items-center justify-between">
-        <Link href="/dashboard" className="text-xl font-extrabold text-brand">
+    <div className="border-b border-neutral-200 bg-white lg:hidden">
+      <div className="flex items-center justify-between gap-3 p-4">
+        <Link href="/dashboard" className="shrink-0 text-xl font-extrabold text-brand">
           TechTreasure
         </Link>
-        <button
-          type="button"
-          className="btn-secondary px-3"
-          aria-expanded={open}
-          aria-controls="mobile-dashboard-menu"
-          onClick={() => setOpen((value) => !value)}
-        >
-          <Icon name={open ? "fluent-emoji-flat:cross-mark" : "fluent-emoji-flat:hamburger"} size={20} />
-          <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-        </button>
+        {/* Credits pill — always visible on mobile so balances never disappear */}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+          <span className="inline-flex max-w-full items-center gap-1.5 truncate rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-800">
+            <span className="truncate capitalize">{plan}</span>
+            <span className="text-neutral-400">•</span>
+            <span className="shrink-0">🪙 {credits.toLocaleString("en-IN")}</span>
+          </span>
+          <Link
+            href="/pricing"
+            className="btn-primary shrink-0 px-3 py-1.5 text-xs"
+          >
+            Upgrade
+          </Link>
+          <button
+            type="button"
+            className="btn-secondary shrink-0 px-3 py-1.5"
+            aria-expanded={open}
+            aria-controls="mobile-dashboard-menu"
+            onClick={() => setOpen((value) => !value)}
+          >
+            <Icon name={open ? "fluent-emoji-flat:cross-mark" : "fluent-emoji-flat:hamburger"} size={20} />
+            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+          </button>
+        </div>
       </div>
       {open && (
-        <nav id="mobile-dashboard-menu" className="mt-4 grid gap-1 border-t border-neutral-100 pt-3">
+        <nav id="mobile-dashboard-menu" className="mx-4 mb-4 grid gap-1 border-t border-neutral-100 pt-3">
           {links.map(([href, icon, label]) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+              className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
             >
               <Icon name={icon} size={18} />
               {label}
             </Link>
           ))}
-          <div className="mt-2 border-t border-neutral-100 pt-3">
+          <div className="mt-2 grid gap-2 border-t border-neutral-100 pt-3">
+            <Link
+              href="/pricing"
+              onClick={() => setOpen(false)}
+              className="btn-primary w-full text-center"
+            >
+              Upgrade plan — ₹9 trial: 10k credits
+            </Link>
             <LogoutButton />
           </div>
         </nav>

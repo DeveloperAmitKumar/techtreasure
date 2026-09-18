@@ -22,8 +22,8 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen lg:flex">
-      <div className="lg:hidden">
-        <MobileMenu />
+      <div className="sticky top-0 z-40 lg:hidden">
+        <MobileMenu plan={profile?.plan ?? "free"} credits={profile?.credits ?? 0} />
       </div>
       <aside className="hidden border-b border-neutral-200 bg-white lg:sticky lg:top-0 lg:block lg:h-screen lg:w-64 lg:shrink-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
         <div className="flex h-full flex-col p-6">
@@ -80,7 +80,7 @@ export default async function DashboardLayout({
           </div>
         </div>
       </aside>
-      <main className="flex-1 p-6 lg:p-10">{children}</main>
+      <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6 lg:p-10">{children}</main>
     </div>
   );
 }

@@ -28,6 +28,12 @@ export interface PlanConfig {
   description: string;
   razorpayPlanEnv: string | null;
   featured?: boolean;
+  /**
+   * Availability status flag — control plans from here itself.
+   * true  = available for purchase.
+   * false = temporarily unavailable (card shows badge + disabled button).
+   */
+  available?: boolean;
 }
 
 export const PLANS: PlanConfig[] = [
@@ -38,6 +44,7 @@ export const PLANS: PlanConfig[] = [
     pinCredits: PLAN_CREDITS.free,
     description: "For trying the pin workflow.",
     razorpayPlanEnv: null,
+    available: true,
   },
   {
     id: "pro",
@@ -46,6 +53,7 @@ export const PLANS: PlanConfig[] = [
     pinCredits: PLAN_CREDITS.pro,
     description: "For regular Pinterest publishing.",
     razorpayPlanEnv: "RAZORPAY_PLAN_PRO",
+    available: false,
   },
   {
     id: "pro_plus",
@@ -55,6 +63,7 @@ export const PLANS: PlanConfig[] = [
     description: "For high-volume creators and teams.",
     razorpayPlanEnv: "RAZORPAY_PLAN_PRO_PLUS",
     featured: true,
+    available: false,
   },
   {
     id: "pro_max",
@@ -63,6 +72,7 @@ export const PLANS: PlanConfig[] = [
     pinCredits: PLAN_CREDITS.pro_max,
     description: "Displayed as unlimited with a 1,000,000 monthly cap.",
     razorpayPlanEnv: "RAZORPAY_PLAN_PRO_MAX",
+    available: false,
   },
 ];
 
@@ -70,10 +80,17 @@ export const TRIAL_PLAN = {
   id: "trial",
   name: "Lifetime Trial",
   priceInr: PLAN_PRICES_INR.trial,
-  pinCredits: 1_000,
+  pinCredits: 10_000,
   description: "One-time purchase, available once per account.",
+  available: true,
 };
 
 export function getPlan(id: string): PlanConfig | undefined {
   return PLANS.find((plan) => plan.id === id);
+}
+
+export function isPlanAvailable(plan: Pick<PlanConfig, "available"> | undefined): boolean {
+  // Undefined = legacy plan without the flag → treat as available.
+  if (!plan) return false;
+  return plan.available !== false;
 }

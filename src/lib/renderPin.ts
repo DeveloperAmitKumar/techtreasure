@@ -7,7 +7,7 @@ export const PIN_WIDTH = 1000;
 export const PIN_HEIGHT = 1500;
 
 // Default background-image blur in canvas pixels. 0 = off.
-export const DEFAULT_BG_BLUR = 20;
+export const DEFAULT_BG_BLUR = 6;
 export const MAX_BG_BLUR = 60;
 
 export interface RenderOptions {

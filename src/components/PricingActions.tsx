@@ -19,6 +19,11 @@ export default function PricingActions({ signedIn = false }: { signedIn?: boolea
   const [acceptedPayments, setAcceptedPayments] = useState(false);
 
   async function startSubscription(planId: PlanId) {
+    const plan = PLANS.find((p) => p.id === planId);
+    if (plan && plan.available === false) {
+      setMessage(`${plan.name} is temporarily unavailable. Please get the ₹9 Lifetime Trial instead.`);
+      return;
+    }
     if (!signedIn) {
       router.push(`/login?next=${encodeURIComponent("/pricing")}`);
       return;
@@ -117,8 +122,15 @@ export default function PricingActions({ signedIn = false }: { signedIn?: boolea
         <span>I agree to the <Link href="/legal/terms" target="_blank" className="font-semibold text-brand hover:underline">Terms and Conditions</Link>, <Link href="/legal/privacy" target="_blank" className="font-semibold text-brand hover:underline">Privacy Policy</Link>, and <Link href="/legal/payments" target="_blank" className="font-semibold text-brand hover:underline">Payments Terms</Link>, including recurring billing and cancellation rules.</span>
       </label>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {PLANS.map((plan) => (
-          <article key={plan.id} className={`card flex flex-col ${plan.featured ? "border-brand ring-2 ring-brand/10" : ""}`}>
+        {PLANS.map((plan) => {
+          const unavailable = plan.available === false;
+          return (
+          <article key={plan.id} className={`card relative flex flex-col ${plan.featured ? "border-brand ring-2 ring-brand/10" : ""} ${unavailable ? "opacity-75" : ""}`}>
+            {unavailable && (
+              <span className="absolute right-4 top-4 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+                Temporarily unavailable
+              </span>
+            )}
             <p className="text-sm font-semibold text-brand">{plan.name}</p>
             <p className="mt-3 text-3xl font-extrabold">₹{plan.priceInr}<span className="text-sm font-normal text-neutral-500"> / month</span></p>
             <p className="mt-3 text-sm text-neutral-600">{plan.description}</p>
@@ -126,11 +138,14 @@ export default function PricingActions({ signedIn = false }: { signedIn?: boolea
               <div className="flex justify-between gap-3"><dt className="text-neutral-500">Pin credits</dt><dd className="font-semibold">{plan.id === "pro_max" ? "Unlimited*" : PLAN_CREDITS[plan.id].toLocaleString("en-IN")}</dd></div>
               <div className="flex justify-between gap-3"><dt className="text-neutral-500">AI credits</dt><dd className="font-semibold text-amber-700">Coming soon</dd></div>
             </dl>
-            <button className="btn-primary mt-auto pt-2" disabled={plan.id === "free" || busy !== null} onClick={() => startSubscription(plan.id)}>
-              {busy === plan.id ? "Opening…" : plan.id === "free" ? "Current base plan" : "Choose plan"}
+            <div className="mt-auto pt-4">
+            <button className="btn-primary w-full" disabled={plan.id === "free" || unavailable || busy !== null} onClick={() => startSubscription(plan.id)}>
+              {unavailable ? "Temporarily unavailable" : busy === plan.id ? "Opening…" : plan.id === "free" ? "Current base plan" : "Choose plan"}
             </button>
+            </div>
           </article>
-        ))}
+          );
+        })}
       </div>
       <article className="card mt-6 border-dashed border-amber-300 bg-amber-50">
         <div className="flex flex-wrap items-center justify-between gap-4">

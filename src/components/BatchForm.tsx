@@ -174,6 +174,8 @@ export default function BatchForm({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [runReport, setRunReport] = useState<RunReport | null>(null);
   const [quotaModal, setQuotaModal] = useState<{ batchId: string } | null>(null);
+  // Shown when With-AI is chosen but no custom Gemini key exists (AI is BYOK-only).
+  const [apiKeyPromptOpen, setApiKeyPromptOpen] = useState(false);
   // Set by the Cancel button; workers finish their current pin and stop.
   const cancelRef = useRef(false);
   // Set when a pin terminally fails with a rate-limit error on shared keys.
@@ -471,6 +473,15 @@ export default function BatchForm({
   }
 
   function switchAiMode(m: AiMode) {
+    // With-AI is BYOK-only (no built-in AI on the site). Gate it behind a key.
+    if (m === "with" && !hasGeminiKey) {
+      setAiMode(m);
+      if (inputMode === "json") {
+        setInputMode("paste");
+      }
+      setApiKeyPromptOpen(true);
+      return;
+    }
     setAiMode(m);
     // JSON exists only without AI; paste/topic exist only with AI.
     if (m === "without" && (inputMode === "paste" || inputMode === "topic")) {
@@ -553,11 +564,10 @@ export default function BatchForm({
       return pushToast("error", "Source link must be a valid http(s) URL.");
     if (items.length === 0)
       return pushToast("error", "Add at least one valid item.");
-    if (aiMode === "with" && !hasGeminiKey)
-      return pushToast(
-        "error",
-        "AI generation is coming soon. Add your own Gemini API key in Settings to use it now, or switch to Without-AI mode."
-      );
+    if (aiMode === "with" && !hasGeminiKey) {
+      setApiKeyPromptOpen(true);
+      return;
+    }
     if (!effectiveUnlimited && credits < items.length)
       return pushToast(
         "error",
@@ -1422,6 +1432,15 @@ export default function BatchForm({
               ? "AI writes the title, description, tags and headlines you leave empty. Uses AI credits + pin credits."
               : "No AI calls — every row must carry full details (CSV or JSON only). Uses pin credits only."}
           </p>
+          {aiMode === "with" && !hasGeminiKey && (
+            <button
+              type="button"
+              onClick={() => setApiKeyPromptOpen(true)}
+              className="mt-2 w-full rounded-md bg-amber-50 px-3 py-2 text-left text-xs text-amber-800 ring-1 ring-inset ring-amber-200 hover:bg-amber-100"
+            >
+              ⚠️ With-AI needs your own Gemini API key — built-in AI isn&apos;t available yet. Tap here to add your key or switch modes.
+            </button>
+          )}
         </div>
         <div>
           <label className="label">Input</label>
@@ -1901,23 +1920,31 @@ export default function BatchForm({
           </button>
         </div>
         {hasGeminiKey && (
-          <div className="flex items-center justify-between rounded-md bg-neutral-50 px-3 py-2">
+          <div className={`rounded-md bg-neutral-50 px-3 py-2 ${aiMode === "without" ? "opacity-60" : ""}`}>
+            <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon name="fluent-emoji-flat:coin" size={16} />
               <span className="text-sm text-neutral-700">
                 Use account credits instead of my API key
               </span>
             </div>
-            <label className="relative inline-flex cursor-pointer items-center">
+            <label className={`relative inline-flex items-center ${aiMode === "without" ? "cursor-not-allowed" : "cursor-pointer"}`}>
               <input
                 type="checkbox"
                 className="peer sr-only"
                 checked={!useCustomKey}
-                disabled={toggleBusy || generating}
+                disabled={toggleBusy || generating || aiMode === "without"}
+                title={aiMode === "without" ? "Not needed in Without-AI mode (no AI calls)" : "Toggle between your API key and account credits"}
                 onChange={(e) => toggleUseCustomKey(!e.target.checked)}
               />
               <div className="h-5 w-9 rounded-full bg-neutral-300 after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-brand peer-checked:after:translate-x-full peer-disabled:opacity-50"></div>
             </label>
+            </div>
+            {aiMode === "without" && (
+              <p className="mt-1 text-xs text-neutral-500">
+                Disabled in Without-AI mode — no AI calls are made, so this choice makes no sense here.
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -2169,6 +2196,52 @@ export default function BatchForm({
                 className="btn-primary"
                 onClick={() => {
                   setQuotaModal(null);
+                  router.push("/dashboard/settings");
+                }}
+              >
+                Add API key
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {apiKeyPromptOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="card w-full max-w-md space-y-4">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <Icon name="fluent-emoji-flat:key" size={20} />
+              API key required for With-AI
+            </h2>
+            <p className="text-sm text-neutral-700">
+              With-AI mode needs your own Gemini API key — built-in AI is not
+              available on the site yet. Add your key in Settings to continue,
+              or switch to Without-AI mode (CSV/JSON with full details, pin
+              credits only).
+            </p>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setApiKeyPromptOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  setApiKeyPromptOpen(false);
+                  switchAiMode("without");
+                }}
+              >
+                Use Without-AI
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  setApiKeyPromptOpen(false);
                   router.push("/dashboard/settings");
                 }}
               >
