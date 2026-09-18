@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import PricingActions from "@/components/PricingActions";
 import { TRIAL_PLAN } from "@/lib/plans";
 
@@ -9,6 +10,17 @@ export default async function PricingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  let trialRedeemed = false;
+  if (user) {
+    try {
+      const admin = createAdminClient();
+      const { data } = await admin.from("trial_redemptions").select("user_id").eq("user_id", user.id).maybeSingle();
+      trialRedeemed = !!data;
+    } catch {
+      trialRedeemed = false;
+    }
+  }
+
   return (
     <main className="min-h-screen bg-neutral-50 px-4 py-10 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-6xl">
@@ -17,14 +29,14 @@ export default async function PricingPage() {
           <Link href={user ? "/dashboard" : "/login"} className="btn-secondary">{user ? "Dashboard" : "Sign in"}</Link>
         </header>
         <div className="mx-auto mt-8 max-w-2xl rounded-lg border border-brand/30 bg-gradient-to-r from-amber-50 to-white px-4 py-3 text-center text-sm ring-1 ring-brand/20">
-          <span className="font-bold text-brand">Specially for you:</span> <span className="font-semibold">₹{TRIAL_PLAN.priceInr} Lifetime Trial</span> — {TRIAL_PLAN.pinCredits.toLocaleString("en-IN")} credits, one-time. Pro plans temporarily unavailable.
+          <span className="font-bold text-brand">Specially for you:</span> <span className="font-semibold">₹{TRIAL_PLAN.priceInr} Lifetime Trial</span> — {TRIAL_PLAN.pinCredits.toLocaleString("en-IN")} credits, one-time. Pro plans temporarily unavailable — trial or top-up packs below.
         </div>
         <section className="mx-auto max-w-2xl py-14 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">Plans</p>
           <h1 className="mt-3 text-4xl font-extrabold tracking-tight">Choose your pin capacity</h1>
           <p className="mt-4 text-neutral-600">Monthly pin credits for Pinterest publishing. AI credits are coming soon and are not included yet.</p>
         </section>
-        <PricingActions signedIn={!!user} />
+        <PricingActions signedIn={!!user} trialRedeemed={trialRedeemed} />
         <section className="mt-14 grid gap-4 md:grid-cols-3">
           <div className="card">
             <h2 className="font-semibold">Pin credits</h2>

@@ -2,6 +2,7 @@
 
 import Papa from "papaparse";
 import type { Pin } from "./types";
+import { SITE_HOME_URL } from "./types";
 
 export const CSV_HEADERS = [
   "Title",
@@ -51,6 +52,35 @@ function isValidHttpUrl(url: string): boolean {
   }
 }
 
+// True for the bare site home (any protocol/www/trailing-slash variant).
+// Those stay plain in the CSV; everything else routes via the redirector.
+function isHomeLink(url: string): boolean {
+  try {
+    const u = new URL(url.trim());
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    const host = u.hostname.toLowerCase().replace(/^www\./, "");
+    const homeHosts = new Set(["techtreasure.sbs"]);
+    try {
+      homeHosts.add(new URL(SITE_URL).hostname.toLowerCase().replace(/^www\./, ""));
+    } catch {
+      // SITE_URL unparseable — fall back to the known hosts above.
+    }
+    try {
+      homeHosts.add(new URL(SITE_HOME_URL).hostname.toLowerCase().replace(/^www\./, ""));
+    } catch {
+      // ignore
+    }
+    return (
+      homeHosts.has(host) &&
+      u.pathname.replace(/\//g, "") === "" &&
+      !u.search &&
+      !u.hash
+    );
+  } catch {
+    return false;
+  }
+}
+
 function publishDateSafe(iso: string | null | undefined): string {
   if (!iso) return "";
   const d = new Date(iso);
@@ -64,7 +94,12 @@ export function buildCsvRows(pins: Pin[], boardName: string, sourceLink: string,
   return pins.map((p) => {
     const mediaUrl = isValidHttpUrl(p.image_url) ? p.image_url : "";
     const pinSourceLink = p.source_link || sourceLink;
-    const link = isValidHttpUrl(pinSourceLink) ? redirectLink(pinSourceLink) : "";
+    // Default site link stays plain; custom URLs go through the redirector.
+    const link = !isValidHttpUrl(pinSourceLink)
+      ? ""
+      : isHomeLink(pinSourceLink)
+        ? SITE_HOME_URL
+        : redirectLink(pinSourceLink);
     return {
       Title: (p.title || "").slice(0, 100),
       "Media URL": mediaUrl,

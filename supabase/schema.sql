@@ -278,6 +278,21 @@ create table if not exists public.trial_redemptions (
 );
 alter table public.trial_redemptions enable row level security;
 
+-- Repeatable Razorpay credit-pack purchases. Service-role order/verify
+-- routes write; authenticated users do not need direct table access.
+-- Unique order/payment ids make verification idempotent (no double credit).
+create table if not exists public.credit_pack_purchases (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  razorpay_order_id text not null unique,
+  razorpay_payment_id text not null unique,
+  credits_granted int not null check (credits_granted > 0),
+  amount_inr int not null check (amount_inr > 0),
+  created_at timestamptz not null default now()
+);
+create index if not exists credit_pack_purchases_user_id_idx on public.credit_pack_purchases (user_id);
+alter table public.credit_pack_purchases enable row level security;
+
 -- ============================================================
 -- 6. Storage buckets (public) + policies
 -- ============================================================

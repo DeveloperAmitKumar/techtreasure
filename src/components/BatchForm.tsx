@@ -15,7 +15,7 @@ import {
   type SkippedRow,
 } from "@/lib/csvImport";
 import { parseImportJson, buildSampleJson } from "@/lib/jsonImport";
-import { resolvePexelsImage } from "@/lib/pexels";
+import { resolvePexelsImage, isPexelsMisconfigured } from "@/lib/pexels";
 import {
   type Brand,
   type SavedBoard,
@@ -422,6 +422,8 @@ export default function BatchForm({
   // Per-run Pexels occurrence counters so repeated queries ("tech" × 20)
   // pick different photos instead of the same one.
   const pexelsCountRef = useRef<Map<string, number>>(new Map());
+  // Queries already warned about this run (avoids 200 identical toasts).
+  const pexelsWarnedRef = useRef<Set<string>>(new Set());
 
   async function resolveBg(index: number, item: PinItem, pinLabel: string): Promise<string | null> {
     if (item.bgUrl) return item.bgUrl;
@@ -435,7 +437,16 @@ export default function BatchForm({
         const url = await resolvePexelsImage(q, occurrence);
         if (url) return url;
       } catch {
-        // fall through to batch pool / brand color
+        // fall through to warning + batch pool / brand color below
+      }
+      if (!pexelsWarnedRef.current.has(key)) {
+        pexelsWarnedRef.current.add(key);
+        pushToast(
+          "error",
+          isPexelsMisconfigured()
+            ? `Pexels key missing — add PEXELS_API_KEY to .env.local (and Vercel) and restart. Pin ${pinLabel} (“${q}”) uses fallback background.`
+            : `No Pexels photo found for “${q}” — pin ${pinLabel} uses fallback background.`
+        );
       }
     }
     if (bgPool.length === 0) return null;
@@ -890,6 +901,7 @@ export default function BatchForm({
     cancelRef.current = false;
     quotaHitRef.current = false;
     pexelsCountRef.current = new Map();
+    pexelsWarnedRef.current = new Set();
     setGenerating(true);
     setGenerationStage("Preparing your batch…");
     console.time("batch");

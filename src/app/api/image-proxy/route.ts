@@ -7,7 +7,9 @@ function isAllowedHost(hostname: string): boolean {
     host.endsWith(".supabase.co") ||
     // Curated stock-photo backgrounds for the Library tab.
     host === "images.unsplash.com" ||
-    host === "plus.unsplash.com"
+    host === "plus.unsplash.com" ||
+    // Pexels search results used as per-row pin backgrounds.
+    host === "images.pexels.com"
   );
 }
 

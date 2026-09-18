@@ -94,3 +94,45 @@ export function isPlanAvailable(plan: Pick<PlanConfig, "available"> | undefined)
   if (!plan) return false;
   return plan.available !== false;
 }
+
+// ============================================================
+// Credit top-up packs (one-time purchases, repeatable).
+// Edit ONLY this block to change pack sizes/prices/limits.
+// ============================================================
+/** Price in ₹ for every 1,000 pin credits (custom amounts use this rate). */
+export const PACK_PRICE_PER_1000_CREDITS = 20;
+/** Smallest / largest credits allowed in a single pack order. */
+export const PACK_MIN_CREDITS = 1000;
+export const PACK_MAX_CREDITS = 10000;
+/** Custom amounts must be a multiple of this. */
+export const PACK_CREDIT_STEP = 1000;
+
+export interface CreditPack {
+  id: string;
+  credits: number;
+  /** Fixed price in ₹ (kept in sync with PACK_PRICE_PER_1000_CREDITS). */
+  priceInr: number;
+  tag?: string;
+}
+
+export const CREDIT_PACKS: CreditPack[] = [
+  { id: "pack_1k", credits: 1000, priceInr: 20 },
+  { id: "pack_5k", credits: 5000, priceInr: 100, tag: "Popular" },
+  { id: "pack_10k", credits: 10000, priceInr: 200, tag: "Best value" },
+];
+
+/** Price in ₹ for an arbitrary credit amount at the per-1000 rate. */
+export function packPriceForCredits(credits: number): number {
+  return Math.round((credits * PACK_PRICE_PER_1000_CREDITS) / 1000);
+}
+
+/** Server + client validation for pack orders (custom amounts included). */
+export function isValidPackCredits(credits: unknown): credits is number {
+  return (
+    typeof credits === "number" &&
+    Number.isInteger(credits) &&
+    credits >= PACK_MIN_CREDITS &&
+    credits <= PACK_MAX_CREDITS &&
+    credits % PACK_CREDIT_STEP === 0
+  );
+}

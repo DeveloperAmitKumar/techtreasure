@@ -7,6 +7,13 @@
 // per pin occurrence for variety. Failures return null → brand-color fallback.
 
 const urlCache = new Map<string, Promise<string[]>>();
+// Set when /api/pexels reports 503 (PEXELS_API_KEY missing server-side).
+let misconfigured = false;
+
+/** True once the server has reported a missing PEXELS_API_KEY. */
+export function isPexelsMisconfigured(): boolean {
+  return misconfigured;
+}
 
 function normalizeQuery(q: string): string | null {
   const t = q.trim().replace(/\s+/g, " ").slice(0, 100);
@@ -18,7 +25,10 @@ function normalizeQuery(q: string): string | null {
 
 async function fetchUrls(query: string): Promise<string[]> {
   const res = await fetch(`/api/pexels?query=${encodeURIComponent(query)}&per_page=10`);
-  if (!res.ok) return [];
+  if (!res.ok) {
+    if (res.status === 503) misconfigured = true;
+    return [];
+  }
   const data = await res.json().catch(() => null);
   const urls = Array.isArray(data?.urls) ? data.urls : [];
   return urls.filter((u: unknown): u is string => typeof u === "string" && u.length > 0);
