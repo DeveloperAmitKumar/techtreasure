@@ -23,5 +23,9 @@ export async function POST() {
   });
   const data = await response.json();
   if (!response.ok) return NextResponse.json({ error: data.error?.description ?? "Razorpay order failed." }, { status: 502 });
-  return NextResponse.json({ key: process.env.RAZORPAY_KEY_ID, orderId: data.id, amount: data.amount });
+  return NextResponse.json({
+    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID,
+    orderId: data.id,
+    amount: data.amount,
+  });
 }

@@ -32,5 +32,9 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
   await admin.from("profiles").update({ razorpay_subscription_id: data.id, pending_plan: plan.id }).eq("id", user.id);
-  return NextResponse.json({ key: process.env.RAZORPAY_KEY_ID, subscriptionId: data.id, description: `${plan.name} monthly plan` });
+  return NextResponse.json({
+    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID,
+    subscriptionId: data.id,
+    description: `${plan.name} monthly plan`,
+  });
 }

@@ -203,13 +203,6 @@ export const CSV_SPECS: Record<ContentType, CsvSpec> = {
   },
 };
 
-export const PLAN_CREDITS: Record<Plan, number> = {
-  free: 20,
-  pro: 10_000,
-  pro_plus: 100_000,
-  pro_max: 1_000_000,
-};
-
 export const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "es", label: "Spanish" },

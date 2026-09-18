@@ -1,5 +1,7 @@
 export type PlanId = "free" | "pro" | "pro_plus" | "pro_max";
 
+// Edit only these values to change how many pin credits each plan grants.
+// Prices below remain fixed to the Razorpay plans already created.
 export const PLAN_CREDITS = {
   free: 20,
   pro: 10_000,
@@ -7,6 +9,7 @@ export const PLAN_CREDITS = {
   pro_max: 1_000_000,
 } as const;
 
+// These prices must match the Razorpay Plan IDs configured in .env.local.
 export const PLAN_PRICES_INR = {
   free: 0,
   pro: 99,
