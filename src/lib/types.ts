@@ -112,7 +112,7 @@ export interface PinItem {
   headline?: string;
 }
 
-export const SITE_HOME_URL = "https://techtreasure.sbs";
+export const SITE_HOME_URL = "https://www.techtreasure.sbs";
 
 // Per-content-type configuration: the required CSV column, optional columns,
 // and the sample rows shown in the guides + CSV template downloads.
