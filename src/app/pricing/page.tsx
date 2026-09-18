@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import PricingActions from "@/components/PricingActions";
+import { TRIAL_PLAN } from "@/lib/plans";
 
 export const metadata = { title: "Pricing · TechTreasure" };
 
@@ -15,6 +16,9 @@ export default async function PricingPage() {
           <Link href={user ? "/dashboard" : "/"} className="text-xl font-extrabold text-brand">TechTreasure</Link>
           <Link href={user ? "/dashboard" : "/login"} className="btn-secondary">{user ? "Dashboard" : "Sign in"}</Link>
         </header>
+        <div className="mx-auto mt-8 max-w-2xl rounded-lg border border-brand/30 bg-gradient-to-r from-amber-50 to-white px-4 py-3 text-center text-sm ring-1 ring-brand/20">
+          <span className="font-bold text-brand">Specially for you:</span> <span className="font-semibold">₹{TRIAL_PLAN.priceInr} Lifetime Trial</span> — {TRIAL_PLAN.pinCredits.toLocaleString("en-IN")} credits, one-time. Pro plans temporarily unavailable.
+        </div>
         <section className="mx-auto max-w-2xl py-14 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">Plans</p>
           <h1 className="mt-3 text-4xl font-extrabold tracking-tight">Choose your pin capacity</h1>
@@ -32,7 +36,7 @@ export default async function PricingPage() {
           </div>
           <div className="card">
             <h2 className="font-semibold">Trial</h2>
-            <p className="mt-2 text-sm leading-6 text-neutral-600">The ₹9 Lifetime Trial is a one-time purchase with 1,000 pin credits and can be redeemed once per account.</p>
+            <p className="mt-2 text-sm leading-6 text-neutral-600">The ₹{TRIAL_PLAN.priceInr} Lifetime Trial is a one-time purchase with {TRIAL_PLAN.pinCredits.toLocaleString("en-IN")} pin credits and can be redeemed once per account.</p>
           </div>
         </section>
         <section className="mt-10 border-t border-neutral-200 pt-8">

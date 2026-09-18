@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import TrialPromoPopup from "@/components/TrialPromoPopup";
+import { TRIAL_PLAN } from "@/lib/plans";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -16,6 +19,15 @@ export default async function DashboardPage() {
       supabase.from("pins").select("*", { count: "exact", head: true }),
     ]);
 
+  let trialRedeemed = false;
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin.from("trial_redemptions").select("user_id").eq("user_id", user.id).maybeSingle();
+    trialRedeemed = !!data;
+  } catch {
+    trialRedeemed = false;
+  }
+
   const stats = [
     { label: "Brands", value: brandCount ?? 0, href: "/dashboard/brands" },
     { label: "Batches", value: batchCount ?? 0, href: "/dashboard/batches" },
@@ -24,6 +36,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      {!trialRedeemed && <TrialPromoPopup variant="dashboard" />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Overview</h1>
@@ -33,6 +46,15 @@ export default async function DashboardPage() {
           + New batch
         </Link>
       </div>
+      {!trialRedeemed && (
+        <Link href="/pricing" className="card mt-6 block border-brand/30 bg-gradient-to-br from-amber-50 via-white to-white ring-1 ring-brand/20 hover:border-brand">
+          <span className="inline-block rounded-full bg-brand px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+            Specially for you
+          </span>
+          <span className="mt-2 block text-base font-extrabold">₹{TRIAL_PLAN.priceInr} Lifetime Trial — {TRIAL_PLAN.pinCredits.toLocaleString("en-IN")} pin credits</span>
+          <span className="mt-1 block text-sm text-neutral-600">One-time, once per account. Tap to claim →</span>
+        </Link>
+      )}
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         {stats.map((s) => (

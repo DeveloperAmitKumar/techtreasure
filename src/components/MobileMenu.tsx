@@ -27,22 +27,10 @@ export default function MobileMenu({
 
   return (
     <div className="border-b border-neutral-200 bg-white lg:hidden">
-      <div className="flex items-center justify-between gap-3 p-4">
-        <Link href="/dashboard" className="shrink-0 text-xl font-extrabold text-brand">
-          TechTreasure
-        </Link>
-        {/* Credits pill — always visible on mobile so balances never disappear */}
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-          <span className="inline-flex max-w-full items-center gap-1.5 truncate rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-800">
-            <span className="truncate capitalize">{plan}</span>
-            <span className="text-neutral-400">•</span>
-            <span className="shrink-0">🪙 {credits.toLocaleString("en-IN")}</span>
-          </span>
-          <Link
-            href="/pricing"
-            className="btn-primary shrink-0 px-3 py-1.5 text-xs"
-          >
-            Upgrade
+      <div className="space-y-3 p-3 sm:p-4">
+        <div className="flex items-center justify-between gap-2">
+          <Link href="/dashboard" className="min-w-0 truncate text-xl font-extrabold text-brand">
+            TechTreasure
           </Link>
           <button
             type="button"
@@ -54,6 +42,20 @@ export default function MobileMenu({
             <Icon name={open ? "fluent-emoji-flat:cross-mark" : "fluent-emoji-flat:hamburger"} size={20} />
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
           </button>
+        </div>
+        {/* Credits + Upgrade — second row so 360px screens never overflow */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex min-w-0 flex-1 items-center gap-1.5 truncate rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-800">
+            <span className="truncate capitalize">{plan}</span>
+            <span className="shrink-0 text-neutral-400">•</span>
+            <span className="shrink-0">{credits.toLocaleString("en-IN")} credits</span>
+          </span>
+          <Link
+            href="/pricing"
+            className="btn-primary shrink-0 px-3 py-1.5 text-xs"
+          >
+            Upgrade
+          </Link>
         </div>
       </div>
       {open && (

@@ -69,7 +69,7 @@ interface RunReport {
 
 function defaultStart(): string {
   const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset() + 10);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset() + 120);
   return d.toISOString().slice(0, 16);
 }
 
@@ -1014,8 +1014,24 @@ export default function BatchForm({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-      <div className="space-y-6">
+    <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_360px]">
+      {/* Mobile preview at top */}
+      <div className="lg:hidden">
+        <div className="card space-y-2">
+          <p className="text-xs font-semibold text-neutral-700 sm:text-sm">Preview</p>
+          <PinPreview
+            brand={effectiveBrand}
+            contentType={contentType}
+            newsTemplate={contentType === "news" ? newsTemplate : undefined}
+            backgroundImageUrl={bgPool[0] || null}
+            backgroundBlur={effectiveBlur}
+            textStyle={textStyle}
+            sampleCta={contentType === "news" ? undefined : ctaOverride.trim() || undefined}
+            author={contentType === "quote" ? "Preview Author" : undefined}
+          />
+        </div>
+      </div>
+      <div className="min-w-0 space-y-4 sm:space-y-6">
       <div className="card space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -2252,22 +2268,6 @@ export default function BatchForm({
         </div>
       )}
 
-      </div>
-
-      <div className="lg:hidden">
-        <div className="card space-y-3">
-          <p className="text-sm font-semibold text-neutral-700">Preview</p>
-          <PinPreview
-            brand={effectiveBrand}
-            contentType={contentType}
-            newsTemplate={contentType === "news" ? newsTemplate : undefined}
-            backgroundImageUrl={bgPool[0] || null}
-            backgroundBlur={effectiveBlur}
-            textStyle={textStyle}
-            sampleCta={contentType === "news" ? undefined : ctaOverride.trim() || undefined}
-            author={contentType === "quote" ? "Preview Author" : undefined}
-          />
-        </div>
       </div>
 
       <div className="hidden lg:block">

@@ -182,20 +182,16 @@ export default function PinPreview({
   ]);
 
   return (
-    <div>
+    <div className="mx-auto w-full max-w-[280px] sm:max-w-[333px]">
       {objectUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={objectUrl}
           alt="Pin preview"
-          style={{ width: "333px", height: "500px" }}
-          className="rounded-md border border-neutral-200 object-cover shadow-sm"
+          className="aspect-[2/3] h-auto w-full rounded-md border border-neutral-200 object-cover shadow-sm"
         />
       ) : (
-        <div
-          className="flex items-center justify-center rounded-md border border-neutral-200 text-sm text-neutral-400"
-          style={{ width: "333px", height: "500px" }}
-        >
+        <div className="flex aspect-[2/3] w-full items-center justify-center rounded-md border border-neutral-200 text-sm text-neutral-400">
           Rendering preview…
         </div>
       )}

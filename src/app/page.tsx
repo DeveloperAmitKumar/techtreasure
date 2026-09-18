@@ -1,8 +1,11 @@
 import Link from "next/link";
+import TrialPromoPopup from "@/components/TrialPromoPopup";
+import { TRIAL_PLAN } from "@/lib/plans";
 
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 text-center">
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-4 py-10 text-center sm:px-6">
+      <TrialPromoPopup variant="home" />
       <span className="mb-4 rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand">
         TechTreasure
       </span>
@@ -15,6 +18,13 @@ export default function Home() {
         export a CSV ready for Pinterest&apos;s bulk uploader — with every link
         monetized through our redirector.
       </p>
+      <Link href="/pricing" className="card mt-6 w-full max-w-2xl border-brand/30 bg-gradient-to-br from-amber-50 via-white to-white text-left ring-1 ring-brand/20">
+        <span className="inline-block rounded-full bg-brand px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+          Specially for you
+        </span>
+        <span className="mt-2 block text-base font-extrabold">₹{TRIAL_PLAN.priceInr} Lifetime Trial — {TRIAL_PLAN.pinCredits.toLocaleString("en-IN")} pin credits</span>
+        <span className="mt-1 block text-sm text-neutral-600">One-time, once per account. Pro plans are paused — claim the trial and start publishing today →</span>
+      </Link>
       <div className="mt-8 flex gap-3">
         <Link href="/signup" className="btn-primary">
           Get started free
